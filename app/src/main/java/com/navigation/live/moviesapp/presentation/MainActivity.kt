@@ -1,17 +1,19 @@
-package com.navigation.live.moviesapp
+package com.navigation.live.moviesapp.presentation
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.Alignment
-import androidx.compose.foundation.layout.Box
-import com.navigation.live.moviesapp.ui.theme.MoviesAppTheme
+import com.navigation.live.moviesapp.presentation.shared.navigation.AppNavigation
+import com.navigation.live.moviesapp.presentation.shared.theme.MoviesAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,15 +24,13 @@ class MainActivity : ComponentActivity() {
         setContent {
             MoviesAppTheme {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.statusBars)
+                        .windowInsetsPadding(WindowInsets.systemBars),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text("Movies App")
-                    }
+                    AppNavigation()
                 }
             }
         }
