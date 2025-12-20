@@ -1,6 +1,7 @@
 package com.navigation.live.moviesapp.presentation.movie_detail.view
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -113,15 +118,37 @@ fun MovieContent(movie: Movie?, onBackClick: () -> Unit) {
         modifier = Modifier
             .fillMaxSize()
     ) {
-        AsyncImage(
-            model = movie?.image,
-            contentDescription = "Banner",
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(320.dp),
-            placeholder = painterResource(R.drawable.poster),
-            contentScale = ContentScale.FillBounds
-        )
+                .height(320.dp)
+        ) {
+            AsyncImage(
+                model = movie?.image,
+                contentDescription = "Banner",
+                modifier = Modifier.fillMaxSize(),
+                placeholder = painterResource(R.drawable.poster),
+                contentScale = ContentScale.FillBounds
+            )
+            Box(
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(40.dp)
+                    .background(
+                        color = Color.Black.copy(alpha = 0.5f),
+                        shape = CircleShape
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.PlayCircle,
+                    contentDescription = "Play video",
+                    modifier = Modifier.size(50.dp),
+                    tint = Color.White
+                )
+            }
+        }
+
         AppHeader(onBackClick)
         Card(
             modifier = Modifier
@@ -251,7 +278,6 @@ fun MovieContent(movie: Movie?, onBackClick: () -> Unit) {
                     fontWeight = FontWeight.Bold,
                 )
                 ShowRating(movie?.rtScore ?: 0)
-
             }
         }
     }
@@ -263,7 +289,7 @@ fun AppHeader(onBackClick: () -> Unit) {
         modifier = Modifier
             .statusBarsPadding()
             .padding(start = 10.dp, top = 15.dp)
-    ){
+    ) {
         Image(
             painter = painterResource(R.drawable.ic_back),
             contentDescription = "back button",

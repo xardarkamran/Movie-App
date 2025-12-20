@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.StarBorder
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -17,12 +18,15 @@ fun ShowRating(ratingScore: Int) {
     Row {
         repeat(5) { index ->
             Icon(
-                imageVector = if (index < stars) Icons.Default.Star else Icons.Outlined.Star,
+                imageVector = if (index < stars)
+                    Icons.Default.Star
+                else
+                    Icons.Default.StarBorder,
                 contentDescription = "Rating",
                 tint = if (index < stars) {
                     Color(0xFFFFC107)
                 } else {
-                    Color.Gray
+                    Color(0xFFFFC107)
                 },
                 modifier = Modifier.size(14.dp)
             )

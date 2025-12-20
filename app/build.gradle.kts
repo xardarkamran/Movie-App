@@ -78,7 +78,7 @@ dependencies {
     implementation(libs.coil.compose)
     //system ui
     implementation(libs.accompanist.systemuicontroller)
-
+    implementation(libs.androidx.material.icons.extended)
 
     // Testing
     testImplementation(libs.junit)
