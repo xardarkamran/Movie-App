@@ -4,17 +4,21 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.navigation.live.moviesapp.presentation.movie_detail.view.MovieDetailScreen
 import com.navigation.live.moviesapp.presentation.movies_list.view.AllMoviesScreen
 
 sealed class Screen(
     val route: String
 ) {
-    object AllMovies : Screen("all_movies_list")
-    object MovieDetail : Screen("movie_detail")
+    data object AllMovies : Screen("all_movies_list")
+    data object MovieDetail : Screen("movie_detail/{movieId}") {
+        fun createRoute(movieId: String) = "movie_detail/$movieId"
+    }
 }
 
 @Composable
@@ -29,13 +33,23 @@ fun AppNavigation(
     ) {
 
         composable(Screen.AllMovies.route) {
-            AllMoviesScreen(onMovieDetail = {
-                navHostController.navigate(Screen.MovieDetail.route)
+            AllMoviesScreen(onMovieDetail = { movieId ->
+                navHostController.navigate(Screen.MovieDetail.createRoute(movieId))
             })
         }
 
-        composable(Screen.MovieDetail.route) {
-            MovieDetailScreen()
+        composable(
+            route = Screen.MovieDetail.route,
+            arguments = listOf(
+                navArgument("movieId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getString("movieId")?:""
+            MovieDetailScreen(movieId){
+                navHostController.popBackStack()
+            }
         }
 
     }

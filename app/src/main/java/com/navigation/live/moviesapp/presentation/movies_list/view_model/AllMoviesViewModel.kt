@@ -36,7 +36,6 @@ class AllMoviesViewModel @Inject constructor(
             _uiState.update { it.copy(isLoading = true) }
             moviesRepo.getAllMovies()
                 .onSuccess {movieList->
-                    delay(2000L)
                     _uiState.update {
                         it.copy(
                             isLoading = false,

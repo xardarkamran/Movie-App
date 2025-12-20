@@ -1,6 +1,5 @@
 package com.navigation.live.moviesapp.presentation.movies_list.view
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,17 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Star
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,30 +37,30 @@ import coil.compose.AsyncImage
 import com.navigation.live.moviesapp.domain.model.Movie
 import com.navigation.live.moviesapp.presentation.movies_list.intent.MovieListIntent
 import com.navigation.live.moviesapp.presentation.movies_list.view_model.AllMoviesViewModel
-
-private const val TAG = "AllMoviesScreen"
+import com.navigation.live.moviesapp.presentation.shared.component.ShowRating
+import com.navigation.live.moviesapp.presentation.shared.component.StatusBarIcons
+import com.navigation.live.moviesapp.presentation.shared.utilz.MovieMockData
 
 @Composable
 fun AllMoviesScreen(
     allMoviesViewModel: AllMoviesViewModel = hiltViewModel(),
-    onMovieDetail: () -> Unit
+    onMovieDetail: (String) -> Unit
 ) {
 
     val uiState by allMoviesViewModel.uiState.collectAsState()
+
+    // set up system bar text color
+    StatusBarIcons(darkIcons = true)
 
     LaunchedEffect(Unit) {
         allMoviesViewModel.handleIntent(MovieListIntent.FetchMoviesList)
     }
 
-    LaunchedEffect(uiState.list) {
-        if (uiState.list.isNotEmpty()) {
-            Log.d(TAG, "AllMoviesScreen:movies list -> ${uiState.list}")
-            Log.d(TAG, "AllMoviesScreen:movies list size -> ${uiState.list.size}")
-        }
-    }
-
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding()
+            .systemBarsPadding()
     ) {
 
         AppHeader()
@@ -85,7 +81,9 @@ fun AllMoviesScreen(
             uiState.list.isNotEmpty() -> {
                 ContentList(
                     uiState.list,
-                    onMovieDetail
+                    onMovieDetail = {
+                        onMovieDetail(it)
+                    }
                 )
             }
 
@@ -105,7 +103,7 @@ fun AppHeader() {
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             text = "Movie Hub",
-            fontSize = 25.sp,
+            fontSize = 22.sp,
             fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.height(10.dp))
@@ -115,8 +113,10 @@ fun AppHeader() {
 @Composable
 fun LoadingContent() {
     Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 50.dp),
+        contentAlignment = Alignment.TopCenter
     ) {
         CircularProgressIndicator(
             strokeWidth = 5.dp
@@ -127,7 +127,7 @@ fun LoadingContent() {
 @Composable
 fun ContentList(
     list: List<Movie>,
-    onMovieDetail: () -> Unit
+    onMovieDetail: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -138,7 +138,9 @@ fun ContentList(
         LazyColumn {
             items(list.size) {
                 val model = list[it]
-                MovieItem(model, onMovieDetail)
+                MovieItem(model, onMovieDetail = {
+                    onMovieDetail(model.id)
+                })
             }
         }
     }
@@ -162,22 +164,23 @@ fun ErrorContent(
 @Composable
 fun MovieItem(
     movie: Movie,
-    onMovieDetail: () -> Unit
+    onMovieDetail: (String) -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(
                 horizontal = 10.dp,
-                vertical = 10.dp
+                vertical = 5.dp
             ),
         colors = CardDefaults.cardColors(
             containerColor = Color.Transparent
         ),
-        onClick = onMovieDetail
+        onClick = {
+            onMovieDetail(movie.id)
+        }
     ) {
         Row {
-
             AsyncImage(
                 model = movie.image,
                 contentDescription = "Network Image",
@@ -187,10 +190,9 @@ fun MovieItem(
                     .clip(RoundedCornerShape(7.dp)),
                 contentScale = ContentScale.Crop,
             )
-
             Column(
                 modifier = Modifier
-                    .padding(start = 10.dp)
+                    .padding(start = 5.dp)
             ) {
                 Text(
                     text = movie.title,
@@ -213,54 +215,11 @@ fun MovieItem(
     }
 }
 
-@Composable
-fun ShowRating(ratingScore: Int) {
-    val stars = ((ratingScore * 5) / 100).coerceIn(0, 5)
-    Row {
-        repeat(5) { index ->
-            Icon(
-                imageVector = if (index < stars) Icons.Default.Star else Icons.Outlined.Star,
-                contentDescription = "Rating",
-                tint = if (index < stars) {
-                    Color(0xFFFFC107)
-                } else {
-                    Color.Gray
-                },
-                modifier = Modifier.size(14.dp)
-            )
-        }
-    }
-}
+
 
 @Preview
 @Composable
 fun PreviewShowLoading() {
-    val mockMovie = Movie(
-        id = "2baf70d1-42bb-4437-b551-e5fed5a87abe",
-        title = "Castle in the Sky",
-        originalTitle = "天空の城ラピュタ",
-        originalTitleRomanised = "Tenkū no shiro Rapyuta",
-        image = "https://image.tmdb.org/t/p/w600_and_h900_bestv2/npOnzAbLh6VOIu3naU5QaEcTepo.jpg",
-        movieBanner = "https://image.tmdb.org/t/p/w533_and_h300_bestv2/3cyjYtLWCBE1uvWINHFsFnE8LUK.jpg",
-        description = "The orphan Sheeta inherited a mysterious crystal that links her to the mythical sky-kingdom of Laputa. With the help of resourceful Pazu and a rollicking band of sky pirates, she makes her way to the ruins of the once-great civilization.",
-        director = "Hayao Miyazaki",
-        producer = "Isao Takahata",
-        releaseDate = "1986",
-        runningTime = 124,
-        rtScore = 95,
-        people = listOf(
-            "https://ghibliapi.vercel.app/people/598f7048-74ff-41e0-92ef-87dc1ad980a9"
-        ),
-        species = listOf(
-            "https://ghibliapi.vercel.app/species/af3910a6-429f-4c74-9ad5-dfe1c4aa04f2"
-        ),
-        locations = listOf(
-            "https://ghibliapi.vercel.app/locations/"
-        ),
-        vehicles = listOf(
-            "https://ghibliapi.vercel.app/vehicles/4e09b023-f650-4747-9ab9-eacf14540cfb"
-        ),
-        url = "https://ghibliapi.vercel.app/films/2baf70d1-42bb-4437-b551-e5fed5a87abe"
-    )
-    MovieItem(mockMovie) {}
+
+    MovieItem(MovieMockData.mockMovie) {}
 }

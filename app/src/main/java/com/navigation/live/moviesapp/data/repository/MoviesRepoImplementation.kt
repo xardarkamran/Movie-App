@@ -20,4 +20,14 @@ class MoviesRepoImplementation @Inject constructor(
             Result.failure(e)
         }
     }
+
+    override suspend fun getMovieById(id: String): Result<Movie> {
+        return try {
+            val dto = apiService.getMovieById(id)
+            val movie = mapper.toDomain(dto)
+            Result.success(movie)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
 }

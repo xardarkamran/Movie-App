@@ -25,9 +25,7 @@ class MainActivity : ComponentActivity() {
             MoviesAppTheme {
                 Surface(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .windowInsetsPadding(WindowInsets.statusBars)
-                        .windowInsetsPadding(WindowInsets.systemBars),
+                        .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AppNavigation()

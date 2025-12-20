@@ -57,6 +57,7 @@ dependencies {
     
     // Hilt
     implementation(libs.hilt.android)
+    implementation(libs.androidx.room.runtime.android)
     kapt(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     
@@ -75,6 +76,8 @@ dependencies {
     implementation(libs.gson)
     //coil
     implementation(libs.coil.compose)
+    //system ui
+    implementation(libs.accompanist.systemuicontroller)
 
 
     // Testing

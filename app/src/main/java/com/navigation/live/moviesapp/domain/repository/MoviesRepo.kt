@@ -3,5 +3,6 @@ package com.navigation.live.moviesapp.domain.repository
 import com.navigation.live.moviesapp.domain.model.Movie
 
 interface MoviesRepo {
-    suspend fun getAllMovies():Result<List<Movie>>
+    suspend fun getAllMovies(): Result<List<Movie>>
+    suspend fun getMovieById(id: String): Result<Movie>
 }
