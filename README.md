@@ -6,11 +6,15 @@ A modern Android application showcasing Studio Ghibli films, built with Clean Ar
 
 Movie Hub is an Android application demonstrating modern development practices. The project follows Clean Architecture principles and implements MVI architecture for predictable state management. Built entirely with Jetpack Compose and Material 3, featuring a beautiful UI to browse and explore Studio Ghibli films.
 
+The app flow starts with a splash screen showing the app icon and animated progress bar. After the splash screen, users are presented with the Movie Hub screen displaying a list of all Studio Ghibli films with thumbnails, descriptions, and star ratings. Tapping on any movie opens a detailed view showing comprehensive information including the movie poster, director, producer, release date, description, and rating.
+
+
 ## 📱 Screenshots
 
-![Splash Screen](screenshots/splash_screen.png)
-![Movies List](screenshots/movies_list.png)
-![Movie Detail](screenshots/movie_detail.png)
+<img width="200" alt="splash" src="https://github.com/user-attachments/assets/ac30f8b8-d47c-48fa-8eb1-6aecc2f7860d"  />
+<img width="200" alt="All movies" src="https://github.com/user-attachments/assets/b4b939e8-80df-49ce-b3fa-49b61752c26e" />
+<img width="200" alt="movie detail 3" src="https://github.com/user-attachments/assets/d10f1a74-0c1b-4a4f-982f-325ab6d4d760" />
+<img width="200" alt="movie detail 2" src="https://github.com/user-attachments/assets/60fe9d23-d3b3-4add-abf4-2fbb517a3232" />
 
 ## ✨ Features
 
