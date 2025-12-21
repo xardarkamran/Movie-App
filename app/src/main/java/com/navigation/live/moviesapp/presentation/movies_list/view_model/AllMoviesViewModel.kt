@@ -7,7 +7,6 @@ import com.navigation.live.moviesapp.presentation.movies_list.intent.MovieListIn
 import com.navigation.live.moviesapp.presentation.movies_list.state.MovieListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -35,15 +34,16 @@ class AllMoviesViewModel @Inject constructor(
         fetchAllMovieListJob = viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             moviesRepo.getAllMovies()
-                .onSuccess {movieList->
+                .onSuccess { movieList ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            list = movieList
+                            list = movieList,
+                            error = null // Clear error on success
                         )
                     }
                 }
-                .onFailure {exception->
+                .onFailure { exception ->
                     _uiState.update {
                         it.copy(
                             isLoading = false,

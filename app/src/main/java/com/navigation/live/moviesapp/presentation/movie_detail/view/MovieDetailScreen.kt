@@ -60,7 +60,8 @@ fun MovieDetailScreen(
     // set up system bar text color
     StatusBarIcons(darkIcons = false)
 
-    LaunchedEffect(Unit) {
+    // Fetch movie when movieId changes
+    LaunchedEffect(movieId) {
         movieDetailsViewModel.handleIntent(MovieDetailIntent.FetchMovieById(movieId))
     }
 

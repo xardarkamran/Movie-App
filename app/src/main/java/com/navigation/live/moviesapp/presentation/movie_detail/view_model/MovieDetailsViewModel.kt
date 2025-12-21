@@ -6,7 +6,7 @@ import com.navigation.live.moviesapp.domain.repository.MoviesRepo
 import com.navigation.live.moviesapp.presentation.movie_detail.intent.MovieDetailIntent
 import com.navigation.live.moviesapp.presentation.movie_detail.state.MovieDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -21,6 +21,8 @@ class MovieDetailsViewModel @Inject constructor(
     private var _uiState = MutableStateFlow(MovieDetailUiState())
     val uiState = _uiState.asStateFlow()
 
+    private var fetchMovieJob: Job? = null
+
     fun handleIntent(movieDetailIntent: MovieDetailIntent) {
         when (movieDetailIntent) {
             is MovieDetailIntent.FetchMovieById -> fetchMovieById(movieDetailIntent.id)
@@ -28,10 +30,12 @@ class MovieDetailsViewModel @Inject constructor(
     }
 
     private fun fetchMovieById(id: String) {
-        viewModelScope.launch {
+        fetchMovieJob?.cancel() // Cancel previous job if exists
+        fetchMovieJob = viewModelScope.launch {
             _uiState.update {
                 it.copy(
-                    isLoading = true
+                    isLoading = true,
+                    error = null // Clear previous error on new fetch
                 )
             }
             moviesRepo.getMovieById(id)
@@ -39,7 +43,8 @@ class MovieDetailsViewModel @Inject constructor(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            movie = movie
+                            movie = movie,
+                            error = null // Clear error on success
                         )
                     }
                 }

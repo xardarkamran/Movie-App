@@ -52,8 +52,11 @@ fun AllMoviesScreen(
     // set up system bar text color
     StatusBarIcons(darkIcons = true)
 
+    // Fetch movies only if list is empty and not loading
     LaunchedEffect(Unit) {
-        allMoviesViewModel.handleIntent(MovieListIntent.FetchMoviesList)
+        if (uiState.list.isEmpty() && !uiState.isLoading) {
+            allMoviesViewModel.handleIntent(MovieListIntent.FetchMoviesList)
+        }
     }
 
     Column(
