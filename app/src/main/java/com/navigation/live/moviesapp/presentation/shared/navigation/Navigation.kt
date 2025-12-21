@@ -11,10 +11,12 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.navigation.live.moviesapp.presentation.movie_detail.view.MovieDetailScreen
 import com.navigation.live.moviesapp.presentation.movies_list.view.AllMoviesScreen
+import com.navigation.live.moviesapp.presentation.splash_screen.SplashScreen
 
 sealed class Screen(
     val route: String
 ) {
+    data object SplashScreen : Screen("splash_screen")
     data object AllMovies : Screen("all_movies_list")
     data object MovieDetail : Screen("movie_detail/{movieId}") {
         fun createRoute(movieId: String) = "movie_detail/$movieId"
@@ -28,9 +30,19 @@ fun AppNavigation(
 ) {
     NavHost(
         navController = navHostController,
-        startDestination = Screen.AllMovies.route,
+        startDestination = Screen.SplashScreen.route,
         modifier = modifier
     ) {
+
+        composable(Screen.SplashScreen.route) {
+            SplashScreen {
+                navHostController.navigate(Screen.AllMovies.route){
+                    popUpTo(Screen.SplashScreen.route){
+                        inclusive = true
+                    }
+                }
+            }
+        }
 
         composable(Screen.AllMovies.route) {
             AllMoviesScreen(onMovieDetail = { movieId ->
@@ -46,8 +58,8 @@ fun AppNavigation(
                 }
             )
         ) { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getString("movieId")?:""
-            MovieDetailScreen(movieId){
+            val movieId = backStackEntry.arguments?.getString("movieId") ?: ""
+            MovieDetailScreen(movieId) {
                 navHostController.popBackStack()
             }
         }
