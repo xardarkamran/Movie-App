@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navigation.live.moviesapp.domain.repository.MoviesRepo
 import com.navigation.live.moviesapp.presentation.movies_list.intent.MovieListIntent
+import com.navigation.live.moviesapp.presentation.movies_list.state.MovieListResult
 import com.navigation.live.moviesapp.presentation.movies_list.state.MovieListUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -32,26 +33,59 @@ class AllMoviesViewModel @Inject constructor(
     private fun fetchAllMovies() {
         fetchAllMovieListJob?.cancel()
         fetchAllMovieListJob = viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true) }
+            _uiState.update {
+                reducer(
+                    _uiState.value,MovieListResult.Loading
+                )
+            }
             moviesRepo.getAllMovies()
                 .onSuccess { movieList ->
                     _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            list = movieList,
-                            error = null // Clear error on success
+                        reducer(
+                            _uiState.value,MovieListResult.Success(movieList)
                         )
                     }
                 }
                 .onFailure { exception ->
                     _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = exception.message ?: "Unknown error occurred, please try again later"
+                        reducer(
+                            _uiState.value,
+                            MovieListResult.Error(
+                                exception.message
+                                    ?: "Unknown error occurred, please try again later"
+                            )
                         )
                     }
                 }
+        }
+    }
 
+    private fun reducer(
+        currentState: MovieListUiState,
+        result: MovieListResult
+    ): MovieListUiState {
+        return when (result) {
+            is MovieListResult.Loading -> {
+                currentState.copy(
+                    isLoading = true,
+                    error = null
+                )
+            }
+
+            is MovieListResult.Success -> {
+                currentState.copy(
+                    isLoading = false,
+                    list = result.list,
+                    error = null
+                )
+            }
+
+            is MovieListResult.Error -> {
+                currentState.copy(
+                    isLoading = false,
+                    error = result.error
+                )
+            }
         }
     }
 
