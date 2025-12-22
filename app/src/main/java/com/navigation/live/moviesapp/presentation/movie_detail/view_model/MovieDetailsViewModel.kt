@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.navigation.live.moviesapp.domain.repository.MoviesRepo
 import com.navigation.live.moviesapp.presentation.movie_detail.intent.MovieDetailIntent
+import com.navigation.live.moviesapp.presentation.movie_detail.state.MovieDetailResult
 import com.navigation.live.moviesapp.presentation.movie_detail.state.MovieDetailUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
@@ -30,35 +31,51 @@ class MovieDetailsViewModel @Inject constructor(
     }
 
     private fun fetchMovieById(id: String) {
-        fetchMovieJob?.cancel() // Cancel previous job if exists
+        fetchMovieJob?.cancel()
         fetchMovieJob = viewModelScope.launch {
             _uiState.update {
-                it.copy(
-                    isLoading = true,
-                    error = null // Clear previous error on new fetch
-                )
+                reducer(it, MovieDetailResult.Loading)
             }
-            moviesRepo.getMovieById(id)
-                .onSuccess { movie ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            movie = movie,
-                            error = null // Clear error on success
-                        )
-                    }
+            moviesRepo.getMovieById(id).onSuccess { movie ->
+                _uiState.update {
+                    reducer(it, MovieDetailResult.Success(movie))
                 }
-                .onFailure { exception ->
-                    _uiState.update {
-                        it.copy(
-                            isLoading = false,
-                            error = exception.message
+            }.onFailure { exception ->
+                _uiState.update {
+                    reducer(
+                        it, MovieDetailResult.Error(
+                            exception.message
                                 ?: "Unknown error occurred, please try again later"
                         )
-                    }
+                    )
                 }
+            }
         }
     }
 
+    private fun reducer(
+        currentState: MovieDetailUiState, result: MovieDetailResult
+    ): MovieDetailUiState {
+
+        return when (result) {
+            is MovieDetailResult.Loading -> {
+                currentState.copy(
+                    isLoading = true, error = null
+                )
+            }
+
+            is MovieDetailResult.Success -> {
+                currentState.copy(
+                    isLoading = false, movie = result.movie, error = null
+                )
+            }
+
+            is MovieDetailResult.Error -> {
+                currentState.copy(
+                    isLoading = false, error = result.error
+                )
+            }
+        }
+    }
 
 }

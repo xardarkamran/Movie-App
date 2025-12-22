@@ -105,7 +105,11 @@ fun LoadingContent() {
 @Composable
 fun ContentError(error: String?) {
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = error ?: ""
